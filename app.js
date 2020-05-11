@@ -1,12 +1,32 @@
-document.getElementById('button').addEventListener('click', loadData);
+import myHTTP from './lib.js';
+const http = new myHTTP();
+document.getElementById("button").addEventListener("click", loadData);
 
 function loadData() {
-
-  const value = document.getElementById('number').value;  
-  if(!!value || value===""){
+  const value = document.getElementById("number").value;
+  if (value) {
+    http.get(`http://api.icndb.com/jokes/random/${value}`, function (err, response) {
+      if (err) {
+        console.log(err);
+      } else {
+        const responseData = JSON.parse(response);
+        let output = "";
+        if (responseData.type === "success") {
+          responseData.value.forEach((jokeData) => {
+            output += `<li>${jokeData.joke}</li>`;
+          });
+        } else {
+          alert("Something went wrong please re-enter");
+        }
+        document.querySelector("#output ul").innerHTML = output;
+      }
+    });
+   
+  } else {
     alert("Please enter integer from 1 to 10");
-  } else{
-    const xhr = new XMLHttpRequest();
+  }
+  /*  else{
+     const xhr = new XMLHttpRequest();
 
     xhr.open('GET', `http://api.icndb.com/jokes/random/${value}`, true);
   
@@ -25,10 +45,9 @@ function loadData() {
       }
     };
   
-    xhr.send();
-  }
+    xhr.send(); 
 
-  
+  } */
 
   /* // Create an XHR Object
   const xhr = new XMLHttpRequest();
@@ -77,6 +96,4 @@ function loadData() {
   // 200: "OK"
   // 403: "Forbidden"
   // 404: "Not Found" */
-
-  
 }
